@@ -15,7 +15,6 @@ dp = Dispatcher()
 form_id = 22340
 pending_declines = {}  # admin_id: (message_id, form_id)
 
-
 @dp.message(F.chat.id == CHAT_ID)
 async def handle_form(message: Message):
     global form_id
@@ -30,16 +29,15 @@ async def handle_form(message: Message):
         await bot.delete_message(message.chat.id, message.message_id)
 
         text = (
-            f"⛔️ **[#${fid}] Форма была отклонена**\n\n"
-            f"📌 Причина: {reason}\n"
-            f"👮 Администратор — {admin}"
+            f"Форма #{fid} была отклонена\n\n"
+            f"Причина: {reason}\n"
+            f"Администратор — {admin}"
         )
 
         await bot.edit_message_text(
             chat_id=CHAT_ID,
             message_id=form_msg_id,
-            text=text,
-            parse_mode="Markdown"
+            text=text
         )
         return
 
@@ -54,19 +52,16 @@ async def handle_form(message: Message):
         ]
     ])
 
+    # Просто вывод сообщения без форматирования
     text = (
-        f"📄 **Форма #{form_id}**\n\n"
-        f"👤 От: {message.from_user.full_name}\n"
-        f"📝 Текст:\n{message.text}"
+        f"{message.text}"
     )
 
-    sent = await bot.send_message(
+    await bot.send_message(
         chat_id=CHAT_ID,
         text=text,
-        reply_markup=keyboard,
-        parse_mode="Markdown"
+        reply_markup=keyboard
     )
-
 
 @dp.callback_query()
 async def handle_decision(call: CallbackQuery):
@@ -79,21 +74,19 @@ async def handle_decision(call: CallbackQuery):
 
     if action == "accept":
         text = (
-            f"✅ **[#${fid}] Форма была принята**\n"
-            f"👮 Администратор — {admin.full_name}"
+            f"Форма #{fid} принята\n"
+            f"Администратор — {admin.full_name}"
         )
-        await call.message.edit_text(text, parse_mode="Markdown")
+        await call.message.edit_text(text)
         await call.answer("Форма принята")
 
     elif action == "decline":
         pending_declines[admin.id] = (call.message.message_id, fid)
-
         await call.message.reply(
             "✏️ Введите причину отказа:",
             reply_markup=ForceReply()
         )
         await call.answer("Ожидаю причину")
-
 
 async def main():
     await dp.start_polling(bot)
