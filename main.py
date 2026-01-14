@@ -5,7 +5,7 @@ from aiogram.types import (
     InlineKeyboardButton, CallbackQuery, ForceReply
 )
 
-TOKEN = "your_token"
+TOKEN = "8598148598:AAFIjwB-i7-_VF21Ni6-Qy-1ittAWzz0JUg"
 ADMINS = [1628291205, 928207798, 929273339, 1216012645]
 CHAT_ID = -1002797249188
 
